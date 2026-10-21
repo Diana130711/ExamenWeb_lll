@@ -1,0 +1,20 @@
+# Habilitar la reescritura de URLs
+Options -Multiviews
+
+# Habilitar el motor de reescritura
+RewriteEngine On
+
+# Evita la exploración de directorios
+Options -Indexes
+
+# --- LISTENERS DE ERRORES HTTP ---
+ErrorDocument 400 /php_01/errors/400.php
+ErrorDocument 403 /php_01/errors/403.php
+ErrorDocument 404 /php_01/errors/404.php
+ErrorDocument 500 /php_01/errors/500.php
+
+# --- REGLAS DE ENRUTAMIENTO MVC ---
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^(.+)$ index.php?page=$1 [L,QSA]
