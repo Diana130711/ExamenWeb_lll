@@ -45,5 +45,15 @@
 			$this->db->bind(':u', (int)$usuarioId);
 			return $this->db->execute();
 		}
+
+        		// Verifica que la carpeta pertenezca al usuario
+		public function carpetaEsDelUsuario($carpetaId, $usuarioId) {
+			$this->db->query('SELECT id FROM carpetas WHERE id = :c AND propietario_id = :u');
+			$this->db->bind(':c', (int)$carpetaId);
+			$this->db->bind(':u', (int)$usuarioId);
+			return $this->db->singleRow() ? true : false;
+		}
+
+
 	}
 ?>
