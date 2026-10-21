@@ -62,6 +62,8 @@
 						'usuario'    => '',
 						'contra'     => '',
 						'recontra'   => '',
+						'nombre'     => '',
+						'email'      => '',
 						'userError'  => '',
 						'passError'  => '',
 						'passError2' => ''
@@ -74,11 +76,15 @@
 						$txtUsua    = filter_input(INPUT_POST, 'txtUsua', FILTER_DEFAULT);
 						$txtContra  = filter_input(INPUT_POST, 'txtContra', FILTER_DEFAULT);
 						$txtContra2 = filter_input(INPUT_POST, 'txtContra2', FILTER_DEFAULT);
+						$txtNomb    = filter_input(INPUT_POST, 'txtNomb', FILTER_DEFAULT);
+						$txtEmail   = filter_input(INPUT_POST, 'txtEmail', FILTER_DEFAULT);
 						
 						$data = [                    
 							'usuario'    => $txtUsua !== null ? trim($txtUsua) : '',
 							'contra'     => $txtContra !== null ? trim($txtContra) : '',
 							'recontra'   => $txtContra2 !== null ? trim($txtContra2) : '',
+							'nombre'     => $txtNomb !== null ? trim($txtNomb) : '',
+							'email'      => $txtEmail !== null ? trim($txtEmail) : '',
 							'userError'  => '',
 							'passError'  => '',
 							'passError2' => ''
@@ -122,8 +128,15 @@
 							$data['contra'] = password_hash($data['contra'],PASSWORD_DEFAULT);
 							
 							//register new user
-							if($this->userModel->register($data)){
+							$nuevoUsuarioId = $this->userModel->register($data);
+							
+							if($nuevoUsuarioId){
+								//crea la carpeta raiz del nuevo usuario en la base de datos
+								$carpetaModel = $this->model('Carpeta');
+								$carpetaModel->crearCarpetaRaiz($nuevoUsuarioId);
+								
 								header('location: ' . urlRoot . '/users/login');
+								exit();
 							}else{
 								die('Algo salío mal...!');
 							}                    
@@ -137,13 +150,17 @@
 				public function createSession($user){
 					$_SESSION['autenticado'] = 'Si';
 					$_SESSION['usuario'] = $user->nombre;
-					header('location: ' . urlRoot . '/pages/index');
+					$_SESSION['usuario_id'] = $user->id;
+					header('location: ' . urlRoot . '/carpetas/index');
+					exit();
 				}
 
 				public function logout(){
 			    unset($_SESSION['autenticado']);
 			    unset($_SESSION['usuario']);
+			    unset($_SESSION['usuario_id']);
 			    header('location: ' . urlRoot . '/pages/index');
+			    exit();
 		        }
 				 
 			}
